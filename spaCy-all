@@ -1,0 +1,128 @@
+## Part - 1 intro and installation of spaCy  
+
+# !pip install -U spacy
+import spacy
+
+# !python -m spacy download en_core_web_md
+nlp = spacy.load("en_core_web_md")
+
+# reading string manually 
+doc = nlp('Hello World! I am spaCy.')
+print('manual string:',doc)
+
+# reading string from text file
+
+file_name = 'test.txt'
+file_text = open(file_name).read()
+file_doc = nlp(file_text)
+print ('string from file:',file_doc)
+open(file_name).close()
+
+## Part - 2 Tokenization
+
+# word tokenize
+words = [word.text for word in doc]
+words
+
+# sentence tokenize
+sents = doc.sents
+list(sents)
+
+text_with_ws <br>
+is_alpha <br>
+is_punct <br>
+is_space <br>
+shape_ <br>
+is_stop <br>
+
+doc
+
+[word.text_with_ws for word in doc] # prints token text with trailing space (if present). 
+
+[(word.text, word.is_alpha) for word in doc] # detects if the token consists of alphabetic characters or not.
+
+[(word.text, word.is_punct) for word in doc] # detects if the token is a punctuation symbol or not.
+
+[(word.text, word.is_space) for word in doc] # detects if the token is a space or not.
+
+[(word.text, word.shape_) for word in doc] # prints out the shape of the word.
+
+[(word.text, word.is_stop) for word in doc] # detects if the token is a stop word or not.
+
+[(word.text, word.is_digit) for word in doc] # detects if the token is a number or not.
+
+Attributes for spacy token: https://spacy.io/api/token#attributes
+
+[(word.text, word.whitespace_) for word in doc] # detects if the token is a number or not.
+
+[(word.text, word.like_num) for word in nlp('i have ten rupees in 1999')] # to detect number
+
+[(word.text, word.like_email) for word in nlp('my email ID is xyz@123.com')] # to detect email
+
+## Part - 3 stopword removal using spacy
+
+stopwords = spacy.lang.en.stop_words.STOP_WORDS
+print(len(stopwords))
+
+for stop_word in list(stopwords)[:5]:
+     print(stop_word)
+
+
+# removing stop words
+new_string = []
+for token in doc:
+    if not token.is_stop:
+        new_string.append(token.text)  
+
+new_string
+
+[word.text for word in doc]
+
+## Part - 4 Lemmatization
+
+new_doc = nlp('running read you I knew john ')
+[(word.text, word.lemma_) for word in new_doc]
+
+## Part - 5 Strings to Hashes
+
+word_hash = nlp.vocab.strings["Hello"]
+print(word_hash)
+
+word_string = nlp.vocab.strings[word_hash]
+print(word_string)
+
+## Part - 6 POS 
+
+[(word.text, word.pos, word.pos_, spacy.explain(word.pos_)) for word in nlp('my email ID is xyz@123.com')]
+
+## Part - 7 Rule-Based Matching 
+
+from spacy.matcher import Matcher
+
+matcher = Matcher(nlp.vocab)
+def extract_number(nlp_doc):
+    pattern = [{'SHAPE': 'ddd'},{'ORTH': '-'},{'SHAPE': 'ddd'}]
+    matcher.add('num', None, pattern)
+    matches = matcher(nlp_doc)
+    for match_id, start, end in matches:
+        span = nlp_doc[start:end]
+        return span.text
+print(extract_number(nlp('John Doe\'s number is 267-758')))
+
+## Part - 8 Dependency Parsing
+
+[(word.text, word.dep_, spacy.explain(word.dep_)) for word in nlp('his name is john doe, he does freelance for people')]
+
+## Part - 9 NER
+
+ for ent in nlp("Indians spent over $71 billion on clothes in 2018 in india").ents:
+    print((ent.text, ent.label_, spacy.explain(ent.label_)))
+
+## Part - 10  Word Vectors and similarity
+
+# nlp('Nice').has_vector
+nlp('Nice').vector
+# nlp('Nice').vector_norm
+
+
+nlp('dog').similarity(nlp('water'))
